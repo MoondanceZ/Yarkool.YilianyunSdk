@@ -595,6 +595,24 @@ namespace Qc.YilianyunSdk
             return responseResult;
         }
         /// <summary>
+        /// 重新打印订单
+        /// </summary>
+        /// <param name="access_token">授权的token 为null将查询hook中的AccessToken</param>
+        /// <param name="machine_code">易联云打印机终端号</param>
+        /// <returns></returns>
+        public YilianyunBaseOutputModel PrinterOrderReprint(string access_token, string machine_code, string order_id)
+        {
+            access_token = access_token ?? _yilianyunSdkHook.GetAccessToken(machine_code)?.Access_Token;
+            if (string.IsNullOrEmpty(access_token))
+                return new YilianyunBaseOutputModel("打印机未授权");
+            Dictionary<string, object> dicData = GetInitPostData();
+            dicData.Add("access_token", access_token);
+            dicData.Add("machine_code", machine_code);
+            dicData.Add("order_id", order_id);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/reprintorder", dicData);
+            return responseResult;
+        }
+        /// <summary>
         /// 获取订单状态接口
         /// </summary>
         /// <param name="access_token">授权的token 为null将查询hook中的AccessToken</param>
