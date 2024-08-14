@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Qc.YilianyunSdk.Utils;
 
 namespace Qc.YilianyunSdk.Test
 {
@@ -34,7 +35,7 @@ namespace Qc.YilianyunSdk.Test
                         </FS>
             """;
             var yilianyunService = serviceProvider.GetService<YilianyunService>();
-            var outputModel = yilianyunService.PrintText(accessToken, machineCode, text, Guid.NewGuid().ToString("N"));
+            var outputModel = yilianyunService!.PrintText(accessToken, machineCode, text, Guid.NewGuid().ToString("N"));
 
             Assert.NotNull(outputModel);
             Assert.AreEqual(outputModel.IsSuccess(), true);
@@ -45,7 +46,17 @@ namespace Qc.YilianyunSdk.Test
         public void TestReprint(string orderId)
         {
             var yilianyunService = serviceProvider.GetService<YilianyunService>();
-            var outputModel = yilianyunService.PrinterOrderReprint(accessToken, machineCode, orderId);
+            var outputModel = yilianyunService!.PrinterOrderReprint(accessToken, machineCode, orderId);
+
+            Assert.NotNull(outputModel);
+            Assert.AreEqual(outputModel.IsSuccess(), true);
+        }
+
+        [Test]
+        public void TestPrinterPageList()
+        {
+            var yilianyunService = serviceProvider.GetService<YilianyunService>();
+            var outputModel = yilianyunService!.PrinterOrderGetPageingList(accessToken, machineCode, 1, 10);
 
             Assert.NotNull(outputModel);
             Assert.AreEqual(outputModel.IsSuccess(), true);
