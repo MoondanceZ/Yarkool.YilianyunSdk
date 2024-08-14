@@ -15,8 +15,9 @@ namespace Qc.YilianyunSdk
             if (contentType != null)
                 httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
 
-            HttpResponseMessage response = client.PostAsync(url, httpContent).Result;
-            string result = response.Content.ReadAsStringAsync().Result;
+            HttpResponseMessage response = client.PostAsync(url, httpContent).ConfigureAwait(false).GetAwaiter().GetResult();
+            response.EnsureSuccessStatusCode();
+            string result = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             return Utils.JsonHelper.Deserialize<T>(result);
         }
         public static T HttpPost<T>(this HttpClient client, string url, Dictionary<string, object> dicData)

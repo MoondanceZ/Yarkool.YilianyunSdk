@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,19 +25,19 @@ namespace Qc.YilianyunSdk.Sample
         {
             services.AddYilianyunSdk<YilianyunSdk.DefaultYilianyunSdkHook>(opt =>
             {
-                // Ó¦ÓÃIDÇë×ÔĞĞÇ°Íù dev.10ss.net »ñÈ¡
+                // åº”ç”¨IDè¯·è‡ªè¡Œå‰å¾€ dev.10ss.net è·å–
                 opt.ClientId = "click_id";
                 opt.ClientSecret = "client_secret";
-                opt.YilianyunClientType = YilianyunClientType.×ÔÓĞÓ¦ÓÃ;
+                opt.YilianyunClientType = YilianyunClientType.è‡ªæœ‰åº”ç”¨;
             });
-            //´ÓÅäÖÃ½Úµã YilianyunConfig ¶ÁÈ¡
+            //ä»é…ç½®èŠ‚ç‚¹ YilianyunConfig è¯»å–
             //services.AddYilianyunSdk<YilianyunSdk.DefaultYilianyunSdkHook>(opt=>Configuration.Bind("YilianyunConfig"));
 
             //services.AddYilianyunSdk<YilianyunSdk.DefaultYilianyunSdkHook>(opt =>
             //{
             //    opt.Client_Id = "click_id";
             //    opt.Client_Secret = "client_secret";
-            //    opt.YilianyunClientType = YilianyunClientType.¿ª·ÅÓ¦ÓÃ;
+            //    opt.YilianyunClientType = YilianyunClientType.å¼€æ”¾åº”ç”¨;
             //});
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

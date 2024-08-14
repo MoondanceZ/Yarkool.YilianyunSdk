@@ -56,9 +56,9 @@ namespace Qc.YilianyunSdk
         /// </summary>
         public string SaveTokenDirPath { get; set; } = "./AppData";
         /// <summary>
-        /// 接口地址 默认 https://open-api.10ss.net
+        /// 接口地址 默认 https://open-api.10ss.net/v2
         /// </summary>
-        public string ApiUrl { get; set; } = "https://open-api.10ss.net";
+        public string ApiUrl { get; set; } = "https://open-api.10ss.net/v2";
         /// <summary>
         /// 接口超时时间 默认 30s
         /// </summary>

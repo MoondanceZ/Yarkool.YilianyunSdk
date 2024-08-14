@@ -12,9 +12,7 @@ namespace Qc.YilianyunSdk
         private readonly HttpClient _httpClient;
         private readonly IYilianyunSdkHook _yilianyunSdkHook;
         private YilianyunConfig _yilianyunConfig;
-        public YilianyunService(IHttpClientFactory _httpClientFactory
-            , IOptions<YilianyunConfig> configOptions
-            , IYilianyunSdkHook yilianyunSdkHook)
+        public YilianyunService(IHttpClientFactory _httpClientFactory, IOptions<YilianyunConfig> configOptions, IYilianyunSdkHook yilianyunSdkHook)
         {
             _yilianyunConfig = configOptions?.Value;
             if (yilianyunSdkHook != null)
@@ -25,7 +23,6 @@ namespace Qc.YilianyunSdk
             if (_yilianyunConfig == null)
                 throw new Exception("打印机配置错误");
             _httpClient = _httpClientFactory.CreateClient("yilianyun");
-            _httpClient.BaseAddress = new Uri(_yilianyunConfig.ApiUrl ?? "https://open-api.10ss.net");
             _httpClient.Timeout = TimeSpan.FromSeconds(_yilianyunConfig.Timeout ?? 30);
         }
         /// <summary>
@@ -79,7 +76,7 @@ namespace Qc.YilianyunSdk
             {
                 dicData.Add("grant_type", "client_credentials");
             }
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>("/oauth/oauth", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>($"{_yilianyunConfig.ApiUrl}/oauth/oauth", dicData);
             if (responseResult.IsError())
             {
                 return new YilianyunBaseOutputModel<AccessTokenOutputModel>(responseResult.Error_Description, responseResult.Error);
@@ -106,7 +103,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("grant_type", "refresh_token");
             dicData.Add("refresh_token", refresh_token);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>("/oauth/oauth", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>($"{_yilianyunConfig.ApiUrl}/oauth/oauth", dicData);
             if (responseResult.IsError())
             {
                 return new YilianyunBaseOutputModel<AccessTokenOutputModel>(responseResult.Error_Description, responseResult.Error);
@@ -162,7 +159,7 @@ namespace Qc.YilianyunSdk
             if (!string.IsNullOrEmpty(print_name))
                 dicData.Add("print_name", print_name);
 
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>("/printer/addprinter", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>($"{_yilianyunConfig.ApiUrl}/printer/addprinter", dicData);
             if (responseResult.IsSuccess())
             {
                 responseResult.Body = accessModel;
@@ -186,7 +183,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("qr_key", qr_key);
 
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>("/oauth/scancodemodel", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<AccessTokenOutputModel>>($"{_yilianyunConfig.ApiUrl}/oauth/scancodemodel", dicData);
             if (responseResult.IsError())
             {
                 return new YilianyunBaseOutputModel<AccessTokenOutputModel>(responseResult.Error_Description, responseResult.Error);
@@ -218,7 +215,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             //授权token
             dicData.Add("access_token", access_token);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/deleteprinter", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/deleteprinter", dicData);
             return responseResult;
         }
         #endregion
@@ -247,7 +244,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("content", System.Web.HttpUtility.UrlEncode(content));
             dicData.Add("origin_id", origin_id ?? Guid.NewGuid().ToString("N"));
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/print/index", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/print/index", dicData);
             return responseResult;
         }
         /// <summary>
@@ -268,7 +265,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("picture_url", picture_url);
             dicData.Add("origin_id", origin_id);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/pictureprint/index", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/pictureprint/index", dicData);
             return responseResult;
         }
 
@@ -290,7 +287,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("origin_id", origin_id);
             dicData.Add("content", contentJson);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/expressprint/index", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/expressprint/index", dicData);
             return responseResult;
         }
 
@@ -319,7 +316,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("is_file", is_online_file);
             if (aid.HasValue)
                 dicData.Add("aid", aid);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/setvoice", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/setvoice", dicData);
             return responseResult;
         }
         /// <summary>
@@ -338,7 +335,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("aid", aid);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/setvoice", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/setvoice", dicData);
             return responseResult;
         }
         /// <summary>
@@ -357,7 +354,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("content", contentJson);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printmenu/addprintmenu", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printmenu/addprintmenu", dicData);
             return responseResult;
         }
         /// <summary>
@@ -376,7 +373,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("response_type", isRestart ? "restart" : "shutdown");
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/shutdownrestart", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/shutdownrestart", dicData);
             return responseResult;
         }
 
@@ -398,7 +395,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("response_type", isBuzzer ? "buzzer" : "horn");
             dicData.Add("voice", voice);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/setsound", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/setsound", dicData);
             return responseResult;
         }
         /// <summary>
@@ -415,7 +412,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/printinfo", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/printinfo", dicData);
             return responseResult;
         }
 
@@ -433,7 +430,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/getversion", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/getversion", dicData);
             return responseResult;
         }
         /// <summary>
@@ -452,7 +449,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("img_url", img_url);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/seticon", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/seticon", dicData);
             return responseResult;
         }
         /// <summary>
@@ -469,7 +466,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/deleteicon", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/deleteicon", dicData);
             return responseResult;
         }
         /// <summary>
@@ -488,7 +485,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("response_type", isOpen ? "btnopen" : "btnclose");
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/btnprint", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/btnprint", dicData);
             return responseResult;
         }
         /// <summary>
@@ -504,7 +501,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("response_type", isOpen ? "btnopen" : "btnclose");
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/getorder", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/getorder", dicData);
             return responseResult;
         }
         /// <summary>
@@ -516,7 +513,7 @@ namespace Qc.YilianyunSdk
         /// <param name="url">推送地址填写必须以http://或https://开头的地址。推送地址需要支持GET访问，当GET请求访问时，请直接返回{"data":"OK"}，用于推送地址的可用性测试</param>
         /// <param name="isOpen">是否开启接单拒单</param>
         /// <returns></returns>
-        public YilianyunBaseOutputModel PrinterSetPushurl(string access_token, string machine_code, string cmd,string url, bool isOpen)
+        public YilianyunBaseOutputModel PrinterSetPushurl(string access_token, string machine_code, string cmd, string url, bool isOpen)
         {
             access_token = access_token ?? _yilianyunSdkHook.GetAccessToken(machine_code)?.Access_Token;
             if (string.IsNullOrEmpty(access_token))
@@ -533,7 +530,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("cmd", cmd);
             dicData.Add("url", url);
             dicData.Add("status", isOpen ? "open" : "close");
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/oauth/setpushurl", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/oauth/setpushurl", dicData);
             return responseResult;
         }
 
@@ -551,7 +548,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<PrinterStatusOutputModel>>("/printer/getprintstatus", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<PrinterStatusOutputModel>>($"{_yilianyunConfig.ApiUrl}/printer/getprintstatus", dicData);
             return responseResult;
         }
 
@@ -573,7 +570,7 @@ namespace Qc.YilianyunSdk
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/cancelall", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/cancelall", dicData);
             return responseResult;
         }
         /// <summary>
@@ -591,7 +588,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("order_id", order_id);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/cancelone", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/cancelone", dicData);
             return responseResult;
         }
         /// <summary>
@@ -609,7 +606,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("order_id", order_id);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>("/printer/reprintorder", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/printer/reprintorder", dicData);
             return responseResult;
         }
         /// <summary>
@@ -628,7 +625,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("order_id", order_id);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<PrinterOrderStatusOutputModel>>("/printer/getorderstatus", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<PrinterOrderStatusOutputModel>>($"{_yilianyunConfig.ApiUrl}/printer/getorderstatus", dicData);
             return responseResult;
         }
         /// <summary>
@@ -649,7 +646,7 @@ namespace Qc.YilianyunSdk
             dicData.Add("machine_code", machine_code);
             dicData.Add("page_index", page_index);
             dicData.Add("page_size", page_size);
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<List<PrinterOrderListOutputModel>>>("/printer/getorderpaginglist", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<List<PrinterOrderListOutputModel>>>($"{_yilianyunConfig.ApiUrl}/printer/getorderpaginglist", dicData);
             return responseResult;
         }
         #endregion
