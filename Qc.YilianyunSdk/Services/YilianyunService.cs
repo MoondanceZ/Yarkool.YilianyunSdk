@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Qc.YilianyunSdk.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -230,21 +231,21 @@ namespace Qc.YilianyunSdk
         /// <param name="content">打印内容,无需进行URL编码</param>
         /// <param name="origin_id">商户系统内部订单号，要求32个字符内，只能是数字、大小写字母 ，且在同一个client_id下唯一</param>
         /// <returns></returns>
-        public YilianyunBaseOutputModel PrintText(string access_token, string machine_code, string content, string origin_id = null)
+        public YilianyunBaseOutputModel<PrintTextOutputModel> PrintText(string access_token, string machine_code, string content, string origin_id = null)
         {
             access_token = access_token ?? _yilianyunSdkHook.GetAccessToken(machine_code)?.Access_Token;
             if (string.IsNullOrEmpty(access_token))
-                return new YilianyunBaseOutputModel("打印机未授权");
+                return new YilianyunBaseOutputModel<PrintTextOutputModel>("打印机未授权");
             if (string.IsNullOrEmpty(machine_code)
                 || string.IsNullOrEmpty(content))
-                return new YilianyunBaseOutputModel("打印内容不能为空");
+                return new YilianyunBaseOutputModel<PrintTextOutputModel>("打印内容不能为空");
 
             Dictionary<string, object> dicData = GetInitPostData();
             dicData.Add("access_token", access_token);
             dicData.Add("machine_code", machine_code);
             dicData.Add("content", System.Web.HttpUtility.UrlEncode(content));
             dicData.Add("origin_id", origin_id ?? Guid.NewGuid().ToString("N"));
-            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel>($"{_yilianyunConfig.ApiUrl}/print/index", dicData);
+            var responseResult = _httpClient.HttpPost<YilianyunBaseOutputModel<PrintTextOutputModel>>($"{_yilianyunConfig.ApiUrl}/print/index", dicData);
             return responseResult;
         }
         /// <summary>
